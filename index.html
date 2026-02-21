@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CONTROL ESP32</title>
+
+<style>
+body{
+background: linear-gradient(135deg,#3b0a63,#1a0033);
+color:white;
+text-align:center;
+font-family:Arial;
+padding-top:60px;
+margin:0;
+}
+
+h1{
+font-size:40px;
+background: linear-gradient(90deg,#ff00ff,#00ffff);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+button{
+width:200px;
+height:60px;
+margin:15px;
+border:none;
+border-radius:12px;
+background: linear-gradient(45deg,#ff00ff,#7a00ff);
+color:white;
+font-size:18px;
+cursor:pointer;
+box-shadow:0 0 20px #ff00ff;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.1);
+box-shadow:0 0 30px #00ffff;
+}
+
+img{
+margin-top:30px;
+border-radius:12px;
+box-shadow:0 0 20px #00ffff;
+}
+
+.status{
+margin-top:20px;
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>CONTROL DE CICLOS</h1>
+
+<button onclick="send(1)">Secuencia 1</button>
+<button onclick="send(2)">Secuencia 2</button><br>
+<button onclick="send(3)">Secuencia 3</button>
+<button onclick="send(4)">Secuencia 4</button>
+
+<div class="status" id="status">Estado: Esperando conexión...</div>
+
+<h3>Escanea para acceder</h3>
+<img id="qr" width="200">
+
+<script>
+
+// ⚠ CAMBIA ESTA IP POR LA DE TU ESP32
+const ipESP32 = "http://192.168.1.105";
+
+function send(num){
+
+document.getElementById("status").innerHTML = "Estado: Enviando comando...";
+
+fetch(ipESP32 + "/s" + num, {
+  method: "GET",
+  mode: "cors"
+})
+.then(response => {
+  if(response.ok){
+    document.getElementById("status").innerHTML = 
+    "Estado: Secuencia " + num + " ejecutada";
+  } else {
+    document.getElementById("status").innerHTML = 
+    "Error: Respuesta inválida del ESP32";
+  }
+})
+.catch(error => {
+  document.getElementById("status").innerHTML =
+  "Error: No se pudo conectar al ESP32";
+  console.error(error);
+});
+
+}
+
+// Generar QR automático
+document.getElementById("qr").src =
+"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" 
++ encodeURIComponent(window.location.href);
+
+</script>
+
+</body>
+</html>
